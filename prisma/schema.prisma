@@ -1,0 +1,143 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id               String          @id @default(uuid())
+  email            String          @unique
+  passwordHash     String          @map("password_hash")
+  name             String
+  bio              String?
+  defaultTone      String?         @default("professional") @map("default_tone")
+  defaultLanguage  String?         @default("en") @map("default_language")
+  createdAt        DateTime        @default(now()) @map("created_at")
+  updatedAt        DateTime        @updatedAt @map("updated_at")
+
+  refreshTokens    RefreshToken[]
+  socialAccounts   SocialAccount[]
+  aiKeys           AiKey?
+  posts            Post[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String   @map("user_id")
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  revoked   Boolean  @default(false)
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@map("refresh_tokens")
+}
+
+model SocialAccount {
+  id               String   @id @default(uuid())
+  userId           String   @map("user_id")
+  platform         Platform
+  accessTokenEnc   String   @map("access_token_enc")
+  refreshTokenEnc  String?  @map("refresh_token_enc")
+  handle           String?
+  connectedAt      DateTime @default(now()) @map("connected_at")
+
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, platform])
+  @@index([userId])
+  @@map("social_accounts")
+}
+
+model AiKey {
+  id              String   @id @default(uuid())
+  userId          String   @unique @map("user_id")
+  openaiKeyEnc    String?  @map("openai_key_enc")
+  anthropicKeyEnc String?  @map("anthropic_key_enc")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("ai_keys")
+}
+
+model Post {
+  id          String         @id @default(uuid())
+  userId      String         @map("user_id")
+  idea        String
+  postType    PostType       @map("post_type")
+  tone        String
+  language    String         @default("en")
+  modelUsed   String         @map("model_used")
+  status      PostStatus     @default(QUEUED)
+  publishAt   DateTime?      @map("publish_at")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  platformPosts   PlatformPost[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([publishAt])
+  @@map("posts")
+}
+
+model PlatformPost {
+  id           String         @id @default(uuid())
+  postId       String         @map("post_id")
+  platform     Platform
+  content      String
+  status       JobStatus      @default(QUEUED)
+  publishedAt  DateTime?      @map("published_at")
+  errorMessage String?        @map("error_message")
+  attempts     Int            @default(0)
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+
+  post         Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([status])
+  @@map("platform_posts")
+}
+
+enum Platform {
+  TWITTER
+  LINKEDIN
+  INSTAGRAM
+  THREADS
+}
+
+enum PostType {
+  ANNOUNCEMENT
+  THREAD
+  STORY
+  PROMOTIONAL
+  EDUCATIONAL
+  OPINION
+}
+
+enum PostStatus {
+  QUEUED
+  PROCESSING
+  PUBLISHED
+  FAILED
+  CANCELLED
+}
+
+enum JobStatus {
+  QUEUED
+  PROCESSING
+  PUBLISHED
+  FAILED
+  CANCELLED
+}
