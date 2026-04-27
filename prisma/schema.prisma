@@ -17,6 +17,7 @@ model User {
   defaultLanguage  String?         @default("en") @map("default_language")
   createdAt        DateTime        @default(now()) @map("created_at")
   updatedAt        DateTime        @updatedAt @map("updated_at")
+  telegramChatId   String?         @unique @map("telegram_chat_id")
 
   refreshTokens    RefreshToken[]
   socialAccounts   SocialAccount[]
