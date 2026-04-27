@@ -54,9 +54,9 @@ router.delete('/social-accounts/:id', async (req, res, next) => {
 // PUT /api/user/ai-keys
 router.put('/ai-keys', async (req, res, next) => {
   try {
-    const { openaiKey, anthropicKey } = req.body;
-    if (!openaiKey && !anthropicKey) return error(res, 'Provide at least one API key', 400);
-    const result = await userService.storeAiKeys(req.user.userId, { openaiKey, anthropicKey });
+    const { groqKey, geminiKey } = req.body;
+    if (!groqKey && !geminiKey) return error(res, 'Provide at least one API key (groqKey or geminiKey)', 400);
+    const result = await userService.storeAiKeys(req.user.userId, { groqKey, geminiKey });
     return success(res, result);
   } catch (err) { next(err); }
 });

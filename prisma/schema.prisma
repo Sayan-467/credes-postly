@@ -58,13 +58,13 @@ model SocialAccount {
 }
 
 model AiKey {
-  id              String   @id @default(uuid())
-  userId          String   @unique @map("user_id")
-  openaiKeyEnc    String?  @map("openai_key_enc")
-  anthropicKeyEnc String?  @map("anthropic_key_enc")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  id            String   @id @default(uuid())
+  userId        String   @unique @map("user_id")
+  groqKeyEnc    String?  @map("groq_key_enc")
+  geminiKeyEnc  String?  @map("gemini_key_enc")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("ai_keys")
 }

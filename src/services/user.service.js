@@ -55,10 +55,10 @@ async function deleteSocialAccount(userId, accountId) {
 
 // ─── AI keys ─────────────────────────────────────────────────────────────────
 
-async function storeAiKeys(userId, { openaiKey, anthropicKey }) {
+async function storeAiKeys(userId, { groqKey, geminiKey }) {
   const data = {};
-  if (openaiKey) data.openaiKeyEnc = encrypt(openaiKey);
-  if (anthropicKey) data.anthropicKeyEnc = encrypt(anthropicKey);
+  if (groqKey) data.groqKeyEnc = encrypt(groqKey);
+  if (geminiKey) data.geminiKeyEnc = encrypt(geminiKey);
 
   await prisma.aiKey.upsert({
     where: { userId },
@@ -72,10 +72,10 @@ async function storeAiKeys(userId, { openaiKey, anthropicKey }) {
 // Used internally by AI engine — not exposed via API
 async function getDecryptedAiKeys(userId) {
   const keys = await prisma.aiKey.findUnique({ where: { userId } });
-  if (!keys) return { openaiKey: null, anthropicKey: null };
+  if (!keys) return { groqKey: null, geminiKey: null };
   return {
-    openaiKey: keys.openaiKeyEnc ? decrypt(keys.openaiKeyEnc) : null,
-    anthropicKey: keys.anthropicKeyEnc ? decrypt(keys.anthropicKeyEnc) : null,
+    groqKey: keys.groqKeyEnc ? decrypt(keys.groqKeyEnc) : null,
+    geminiKey: keys.geminiKeyEnc ? decrypt(keys.geminiKeyEnc) : null,
   };
 }
 
