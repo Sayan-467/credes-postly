@@ -40,14 +40,13 @@ services:
         sync: false
       - key: MASTODON_INSTANCE
         value: mastodon.social
-
-  # PostgreSQL database
-  databases:
-    - name: postly-db
-      plan: free
-
   # Redis instance
   - type: redis
     name: postly-redis
     plan: free
     maxmemoryPolicy: noeviction
+
+# PostgreSQL database
+databases:
+  - name: postly-db
+    plan: free
