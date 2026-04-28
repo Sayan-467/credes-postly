@@ -2,6 +2,21 @@ const { getRedis } = require('../utils/redis');
 
 const SESSION_TTL = 1800; // 30 minutes in seconds
 const KEY_PREFIX = 'bot:session:';
+const memorySessions = new Map();
+
+let useRedis;
+
+async function shouldUseRedis() {
+  if (useRedis === undefined) {
+    const { isRedisAvailable } = require('../utils/redis');
+    useRedis = await isRedisAvailable();
+    if (!useRedis) {
+      console.warn('Redis unavailable - using in-memory Telegram sessions');
+    }
+  }
+
+  return useRedis;
+}
 
 function sessionKey(chatId) {
   return `${KEY_PREFIX}${chatId}`;
@@ -19,6 +34,10 @@ const defaultSession = () => ({
 });
 
 async function getSession(chatId) {
+  if (!(await shouldUseRedis())) {
+    return memorySessions.get(sessionKey(chatId)) || defaultSession();
+  }
+
   const redis = getRedis();
   const raw = await redis.get(sessionKey(chatId));
   if (!raw) return defaultSession();
@@ -30,11 +49,22 @@ async function getSession(chatId) {
 }
 
 async function setSession(chatId, data) {
+  if (!(await shouldUseRedis())) {
+    memorySessions.set(sessionKey(chatId), data);
+    return data;
+  }
+
   const redis = getRedis();
   await redis.setex(sessionKey(chatId), SESSION_TTL, JSON.stringify(data));
+  return data;
 }
 
 async function clearSession(chatId) {
+  if (!(await shouldUseRedis())) {
+    memorySessions.delete(sessionKey(chatId));
+    return;
+  }
+
   const redis = getRedis();
   await redis.del(sessionKey(chatId));
 }

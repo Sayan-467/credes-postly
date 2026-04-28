@@ -47,6 +47,12 @@ function buildSystemPrompt(platform, tone, language) {
 - 1-2 hashtags maximum
 - Tone: ${tone}. Language: ${language}.
 - Return ONLY the post text. No explanations.`,
+
+    mastodon: `You write Mastodon posts. STRICT rules:
+  - Maximum 500 characters (hard limit)
+  - 1-3 hashtags maximum
+  - Tone: ${tone}. Language: ${language}.
+  - Return ONLY the post text. No explanations.`,
   };
 
   return rules[platform] || rules.twitter;

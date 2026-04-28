@@ -1,9 +1,14 @@
 const { Worker } = require('bullmq');
 const prisma = require('../utils/prisma');
 const { publishToPlatform } = require('../services/publish.service');
-const { getRedis } = require('../utils/redis');
+const { getRedis, isRedisAvailable } = require('../utils/redis');
 
-function startPublishWorker() {
+async function startPublishWorker() {
+  if (!(await isRedisAvailable())) {
+    console.warn('Redis unavailable - publish worker disabled');
+    return null;
+  }
+
   const worker = new Worker(
     'publish',
     async (job) => {

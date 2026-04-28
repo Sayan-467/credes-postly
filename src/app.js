@@ -41,7 +41,7 @@ if (require.main === module) {
     console.log(`Postly API running on port ${PORT}`);
 
     // start BullMQ worker
-    startPublishWorker();
+    await startPublishWorker();
 
     // Bot setup
     try {

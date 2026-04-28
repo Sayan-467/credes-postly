@@ -6,7 +6,8 @@ const prisma = require('../utils/prisma');
 
 async function postToMastodon(content, userId) {
   const account = await prisma.socialAccount.findFirst({
-    where: { userId, platform: 'TWITTER' }, // stored under TWITTER slot in schema
+    where: { userId, platform: { in: ['MASTODON', 'TWITTER'] } },
+    orderBy: { platform: 'asc' },
   });
 
   // Fall back to platform-level token if user hasn't connected their own account
@@ -80,6 +81,7 @@ async function postToThreads(content, userId) {
 async function publishToPlatform(platform, content, userId) {
   const publishers = {
     TWITTER: postToMastodon,   // Mastodon used as free Twitter equivalent
+    MASTODON: postToMastodon,
     LINKEDIN: postToLinkedIn,
     INSTAGRAM: postToInstagram,
     THREADS: postToThreads,

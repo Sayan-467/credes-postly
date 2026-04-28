@@ -1,5 +1,5 @@
 const { Queue } = require('bullmq');
-const { getRedis } = require('../utils/redis');
+const { getRedis, isRedisAvailable } = require('../utils/redis');
 
 const QUEUE_NAME = 'publish';
 
@@ -29,6 +29,10 @@ function getPublishQueue() {
  * @param {Date|null} publishAt - null = immediate
  */
 async function enqueuePost(post, publishAt = null) {
+  if (!(await isRedisAvailable())) {
+    throw new Error('Redis is unavailable. Start Redis or run the app through Docker to queue posts.');
+  }
+
   const queue = getPublishQueue();
   const delay = publishAt ? Math.max(0, new Date(publishAt) - Date.now()) : 0;
 

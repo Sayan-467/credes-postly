@@ -1,0 +1,253 @@
+{
+  "info": {
+    "name": "Postly API",
+    "description": "Multi-platform AI content publishing engine — Credes Backend Intern Task",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "https://YOUR-RAILWAY-APP.up.railway.app", "type": "string" },
+    { "key": "accessToken", "value": "", "type": "string" },
+    { "key": "refreshToken", "value": "", "type": "string" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "const r = pm.response.json();",
+            "if (r.data && r.data.accessToken) {",
+            "  pm.collectionVariables.set('accessToken', r.data.accessToken);",
+            "  pm.collectionVariables.set('refreshToken', r.data.refreshToken);",
+            "}"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/register",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"demo@example.com\",\n  \"password\": \"Pass1234!\",\n  \"name\": \"Demo User\"\n}" }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "const r = pm.response.json();",
+            "if (r.data && r.data.accessToken) {",
+            "  pm.collectionVariables.set('accessToken', r.data.accessToken);",
+            "  pm.collectionVariables.set('refreshToken', r.data.refreshToken);",
+            "}"
+          ]}}],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/login",
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"demo@example.com\",\n  \"password\": \"Pass1234!\"\n}" }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/refresh",
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/auth/logout",
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" }
+          }
+        },
+        {
+          "name": "Get Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/auth/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Get Profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/user/profile"
+          }
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/user/profile",
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Updated Name\",\n  \"bio\": \"Building cool stuff\",\n  \"defaultTone\": \"casual\",\n  \"defaultLanguage\": \"en\"\n}" }
+          }
+        },
+        {
+          "name": "Add Social Account (Mastodon)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/user/social-accounts",
+            "body": { "mode": "raw", "raw": "{\n  \"platform\": \"TWITTER\",\n  \"accessToken\": \"your_mastodon_access_token\",\n  \"handle\": \"yourhandle@mastodon.social\"\n}" }
+          }
+        },
+        {
+          "name": "List Social Accounts",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/user/social-accounts"
+          }
+        },
+        {
+          "name": "Disconnect Social Account",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/user/social-accounts/ACCOUNT_ID_HERE"
+          }
+        },
+        {
+          "name": "Store AI Keys",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/user/ai-keys",
+            "body": { "mode": "raw", "raw": "{\n  \"groqKey\": \"gsk_your_key\",\n  \"geminiKey\": \"AIza_your_key\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Content",
+      "item": [
+        {
+          "name": "Generate Preview (no publish)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/content/generate",
+            "body": { "mode": "raw", "raw": "{\n  \"idea\": \"We just launched a new feature that lets users schedule posts across multiple platforms with one click.\",\n  \"post_type\": \"announcement\",\n  \"platforms\": [\"twitter\", \"linkedin\"],\n  \"tone\": \"professional\",\n  \"language\": \"en\",\n  \"model\": \"groq\"\n}" }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Posts",
+      "item": [
+        {
+          "name": "Publish Now",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/posts/publish",
+            "body": { "mode": "raw", "raw": "{\n  \"idea\": \"Excited to share that our team just shipped a major update to our open source project!\",\n  \"post_type\": \"announcement\",\n  \"platforms\": [\"twitter\"],\n  \"tone\": \"casual\",\n  \"language\": \"en\",\n  \"model\": \"gemini\"\n}" }
+          }
+        },
+        {
+          "name": "Schedule Post",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{accessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "url": "{{baseUrl}}/api/posts/schedule",
+            "body": { "mode": "raw", "raw": "{\n  \"idea\": \"Tips for writing better commit messages in 2026\",\n  \"post_type\": \"educational\",\n  \"platforms\": [\"twitter\", \"linkedin\"],\n  \"tone\": \"professional\",\n  \"language\": \"en\",\n  \"model\": \"groq\",\n  \"publish_at\": \"2026-05-01T10:00:00.000Z\"\n}" }
+          }
+        },
+        {
+          "name": "List Posts (paginated)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/posts?page=1&limit=10",
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "10" },
+                { "key": "status", "value": "published", "disabled": true },
+                { "key": "platform", "value": "twitter", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Post by ID",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/posts/POST_ID_HERE"
+          }
+        },
+        {
+          "name": "Retry Failed Post",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/posts/POST_ID_HERE/retry"
+          }
+        },
+        {
+          "name": "Cancel Scheduled Post",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/posts/POST_ID_HERE"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Stats",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{accessToken}}" }],
+            "url": "{{baseUrl}}/api/dashboard/stats"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/health"
+          }
+        }
+      ]
+    }
+  ]
+}
