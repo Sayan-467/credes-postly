@@ -15,16 +15,20 @@ async function startPublishWorker() {
       const { postId, platformPostId, platform, content, userId } = job.data;
 
       // Mark as processing
-      await prisma.platformPost.update({
+      const processingResult = await prisma.platformPost.updateMany({
         where: { id: platformPostId },
         data: { status: 'PROCESSING', attempts: { increment: 1 } },
       });
+      if (processingResult.count === 0) {
+        console.warn(`Platform post not found for job ${job.id}; skipping`);
+        return null;
+      }
 
       // Attempt platform publish
       const result = await publishToPlatform(platform, content, userId);
 
       // Success — mark published
-      await prisma.platformPost.update({
+      await prisma.platformPost.updateMany({
         where: { id: platformPostId },
         data: {
           status: 'PUBLISHED',
@@ -51,13 +55,17 @@ async function startPublishWorker() {
     const isFinalAttempt = job.attemptsMade >= job.opts.attempts;
 
     if (isFinalAttempt) {
-      await prisma.platformPost.update({
+      const failedResult = await prisma.platformPost.updateMany({
         where: { id: platformPostId },
         data: {
           status: 'FAILED',
           errorMessage: err.message,
         },
       });
+      if (failedResult.count === 0) {
+        console.warn(`Platform post not found for failed job ${job.id}; skipping`);
+        return;
+      }
       await _syncPostStatus(postId);
     }
   });

@@ -37,7 +37,7 @@ app.use(errorHandler);
 const PORT = process.env.PORT || 3000;
 
 if (require.main === module) {
-  app.listen(PORT, async () => {
+  app.listen(PORT, '0.0.0.0', async () => {
     console.log(`Postly API running on port ${PORT}`);
 
     // start BullMQ worker
