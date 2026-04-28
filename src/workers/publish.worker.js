@@ -1,6 +1,6 @@
 const { Worker } = require('bullmq');
 const prisma = require('../utils/prisma');
-const { publishToPlatform } = require('../services/publish.service');
+const { publishToPlatform } = require('../services/Publish.service');
 const { getRedis, isRedisAvailable } = require('../utils/redis');
 
 async function startPublishWorker() {
