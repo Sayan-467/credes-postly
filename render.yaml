@@ -1,5 +1,4 @@
 services:
-  # Web service — the main API + bot
   - type: web
     name: postly-api
     runtime: docker
@@ -17,7 +16,6 @@ services:
           name: postly-redis
           type: redis
           property: connectionString
-      # Set these manually in Render dashboard after first deploy:
       - key: JWT_ACCESS_SECRET
         sync: false
       - key: JWT_REFRESH_SECRET
@@ -40,13 +38,13 @@ services:
         sync: false
       - key: MASTODON_INSTANCE
         value: mastodon.social
-  # Redis instance
+
   - type: redis
     name: postly-redis
     plan: free
     maxmemoryPolicy: noeviction
+    ipAllowList: []
 
-# PostgreSQL database
 databases:
   - name: postly-db
     plan: free
