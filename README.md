@@ -2,7 +2,7 @@
 
 > Backend intern candidate task — Credes TechLabs
 
-**Live API Base URL:** `https://YOUR-RAILWAY-APP.up.railway.app`  
+**Live API Base URL:** `https://postly-app.onrender.com/`  
 **Telegram Bot:** `@YourBotUsername`
 
 ---
