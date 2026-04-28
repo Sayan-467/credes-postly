@@ -1,7 +1,5 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../utils/prisma');
 const { encrypt, decrypt } = require('../utils/crypto');
-
-const prisma = new PrismaClient();
 
 async function updateProfile(userId, data) {
   const { name, bio, defaultTone, defaultLanguage } = data;

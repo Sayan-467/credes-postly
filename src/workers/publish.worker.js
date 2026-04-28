@@ -1,9 +1,7 @@
 const { Worker } = require('bullmq');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../utils/prisma');
 const { publishToPlatform } = require('../services/publish.service');
 const { getRedis } = require('../utils/redis');
-
-const prisma = new PrismaClient();
 
 function startPublishWorker() {
   const worker = new Worker(

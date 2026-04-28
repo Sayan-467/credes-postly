@@ -1,9 +1,8 @@
 const bcrypt = require('bcrypt');
 const { randomUUID } = require('crypto');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../utils/prisma');
 const { signAccessToken, signRefreshToken, verifyRefreshToken } = require('../utils/jwt');
 
-const prisma = new PrismaClient();
 const BCRYPT_ROUNDS = 12;
 
 async function register({ email, password, name }) {

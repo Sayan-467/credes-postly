@@ -1,9 +1,7 @@
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../utils/prisma');
 const { generateContent } = require('./ai.service');
 const { getDecryptedAiKeys } = require('./user.service');
 const { enqueuePost } = require('./queue.service');
-
-const prisma = new PrismaClient();
 
 /**
  * Generate content only (no DB save) — used by bot for preview
